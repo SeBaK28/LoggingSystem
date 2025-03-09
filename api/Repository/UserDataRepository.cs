@@ -16,9 +16,11 @@ namespace api.Repository
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
+        private readonly ICart _cart;
 
-        public UserDataRepository(ApplicationDbContext context, UserManager<User> userManager)
+        public UserDataRepository(ApplicationDbContext context, UserManager<User> userManager, ICart cart)
         {
+            _cart = cart;
             _userManager = userManager;
             _context = context;
         }
@@ -31,18 +33,19 @@ namespace api.Repository
             return user;
         }
 
-        public async Task<User?> DeleteAsync(string email, string password)
+        public async Task<User?> DeleteAsync(string email)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(s => s.Email == email);
-            if (user.Roles == "Admin")
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Email.Contains(email));
+
+            if (user == null)
             {
                 return null;
             }
-            if (user.PasswordHash != password || user == null)
-            {
-                return null;
-            }
+
+            var userCart = await _cart.FindCartByUserId(user.Id);
+
             _context.Users.Remove(user);
+            _context.Carts.Remove(userCart);
             await _context.SaveChangesAsync();
 
             return user;
@@ -59,54 +62,9 @@ namespace api.Repository
             return await user;
         }
 
-        public Task<User?> GetByUserNameAsync(string name, string password)
+        public async Task<bool> isEmailExist(string email)
         {
-            throw new NotImplementedException();
-        }
-
-        public async Task<User?> UpdateAsync(string name, UpdateUserDto updateDto)
-        {
-            var stock = await _context.Users.FirstOrDefaultAsync(s => s.Email == name);
-
-            if (stock == null)
-            {
-                return null;
-            }
-
-            /*if (stock.PasswordHash != null)
-            {
-                stock.PasswordHash = updateDto.PasswordHash;
-            }*/
-            if (stock.UserName != null)
-            {
-                stock.UserName = updateDto.UserName;
-            }
-            if (stock.PhoneNumber != null)
-            {
-                stock.PhoneNumber = updateDto.PhoneNumber;
-            }
-
-
-
-
-
-            /*if (stock.UserName != null)
-            {
-                stock.UserName = updateDto.UserName;
-            }
-            if (stock.PhoneNumber != null)
-            {
-                stock.PhoneNumber = updateDto.PhoneNumber;
-            }
-            if (stock.PasswordHash != null)
-            {
-                stock.PasswordHash = updateDto.PasswordHash;
-            }*/
-
-            await _context.SaveChangesAsync();
-
-            return stock;
-
+            return await _userManager.Users.AnyAsync(x => x.Email == email);
         }
     }
 }

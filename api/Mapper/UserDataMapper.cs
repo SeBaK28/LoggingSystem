@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using api.Dtos;
+using api.Dtos.Cart;
 using api.Models;
 using Microsoft.AspNetCore.Authorization;
 
@@ -31,7 +32,7 @@ namespace api.Mapper
                 Email = createDto.Email,
                 UserName = createDto.UserName,
                 PhoneNumber = createDto.PhoneNumber,
-                //PasswordHash = createDto.PasswordHash
+                userCart = new Cart()
             };
         }
     }

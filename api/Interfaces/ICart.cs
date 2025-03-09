@@ -6,9 +6,9 @@ using api.Models;
 
 namespace api.Interfaces
 {
-    public interface ITokenService
+    public interface ICart
     {
-        string CreateToken(User tokenUser);
-
+        Task<List<Cart>> GetAllProdFromCartAsync(string email);
+        Task<Cart> FindCartByUserId(string userId);
     }
 }

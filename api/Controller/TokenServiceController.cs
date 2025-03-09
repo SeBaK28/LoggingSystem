@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using api.Data;
 using api.Dtos;
+using api.Dtos.Cart;
 using api.Dtos.TokenService;
 using api.Interfaces;
 using api.Mapper;
@@ -15,17 +17,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace api.Controller
 {
-    [Route("api")]
+    [Route("api/account")]
     [ApiController]
     public class TokenServiceController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
-        //private readonly ApplicationDbContext _context;
         private readonly ITokenService _tokenService;
-        public TokenServiceController(UserManager<User> userManager, SignInManager<User> signInManager, ITokenService tokenService)
+        private readonly ApplicationDbContext _context;
+        private readonly IUserData _userData;
+        private readonly ICart _cart;
+        public TokenServiceController(UserManager<User> userManager, SignInManager<User> signInManager,
+        ITokenService tokenService, IUserData userData, ApplicationDbContext context,
+        ICart cart)
         {
-            //_context = context;
+            _cart = cart;
+            _context = context;
+            _userData = userData;
             _userManager = userManager;
             _signInManager = signInManager;
             _tokenService = tokenService;
@@ -67,11 +75,16 @@ namespace api.Controller
 
                 var appUser = createUserDto.ToCreateUserDto();
 
-                var createdUser = await _userManager.CreateAsync(appUser, createUserDto.PasswordHash);
+                if (await _userData.isEmailExist(createUserDto.Email) == true)
+                {
+                    return Conflict($"This email: {appUser.Email} is already in used");
+                }
 
+                var createdUser = await _userManager.CreateAsync(appUser, createUserDto.PasswordHash);
                 if (createdUser.Succeeded)
                 {
                     var roleResult = await _userManager.AddToRoleAsync(appUser, "User");
+
                     if (roleResult.Succeeded)
                     {
                         return Ok(
@@ -81,9 +94,16 @@ namespace api.Controller
                                 UserName = appUser.UserName,
                                 PhoneNumber = appUser.PhoneNumber,
                                 Roles = appUser.Roles,
-                                Tokens = _tokenService.CreateToken(appUser)
+                                Tokens = _tokenService.CreateToken(appUser),
+                                cart = new CartDto
+                                {
+                                    CartId = appUser.userCart.CartId,
+                                    UserId = appUser.Id,
+                                    ProductsList = null
+                                }
                             }
                         );
+
                     }
                     else
                     {
@@ -98,7 +118,8 @@ namespace api.Controller
             catch (Exception e)
             {
                 return StatusCode(500, e);
-            }
+            };
+
         }
 
         [HttpPut]
@@ -113,6 +134,7 @@ namespace api.Controller
 
             getUser.PhoneNumber = updateDto.PhoneNumber;
             getUser.UserName = updateDto.UserName;
+
 
             var updateUser = await _userManager.UpdateAsync(getUser);
 
@@ -149,6 +171,41 @@ namespace api.Controller
             {
                 return BadRequest("Niepowodzenie");
             }
+        }
+
+        [HttpDelete]
+        [Route("{email}/{password}")]
+        public async Task<IActionResult> Delete([FromRoute] string email, [FromRoute] string password)
+        {
+
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null || user.Roles == "Admin")
+            {
+                return Unauthorized("Cannot Delete this account");
+            }
+
+            var isPasswdCorrect = await _signInManager.CanSignInAsync(user);
+
+            if (isPasswdCorrect == false)
+            {
+                return Unauthorized("Wrong Password");
+            }
+
+            var deleteCart = await _cart.FindCartByUserId(user.Id);
+            var deleteUser = await _userManager.DeleteAsync(user);
+            _context.Carts.Remove(deleteCart);
+            await _context.SaveChangesAsync();
+
+            if (deleteUser.Succeeded)
+            {
+                return Ok("Account removed");
+            }
+            else
+            {
+                return BadRequest("Cannot delete this account");
+            }
+
         }
     }
 }

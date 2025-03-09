@@ -23,10 +23,8 @@ namespace api.Controller
     {
         private readonly IUserData _userData;
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<User> _userManager;
-        public UserDataController(IUserData userData, ApplicationDbContext context, UserManager<User> userManager)
+        public UserDataController(IUserData userData, ApplicationDbContext context)
         {
-            _userManager = userManager;
             _context = context;
             _userData = userData;
         }
@@ -53,55 +51,19 @@ namespace api.Controller
             return Ok(stock.ToStockDto());
         }
 
+        //AsAdmin
         [HttpDelete]
-        [Route("{email}/{password}")]
-        public async Task<IActionResult> Delete([FromRoute] string email, [FromRoute] string password)
+        [Route("{email}")]
+        public async Task<IActionResult> DeleteAccount([FromRoute] string email)
         {
-            var stock = await _userData.DeleteAsync(email, password);
-            if (stock == null)
+            var user = await _userData.DeleteAsync(email);
+
+            if (user == null)
             {
-                return BadRequest("Email or Password is incorrect");
+                return BadRequest();
             }
 
             return NoContent();
         }
-        /*
-                [HttpPut]
-                [Route("user/{email}")]
-                public async Task<IActionResult> Update([FromRoute] string email, [FromBody] UpdateUserDto updateUserDto)
-                {
-                    var updateDto = await _userData.UpdateAsync(email, updateUserDto);
-
-                    if (updateDto == null)
-                    {
-                        return NotFound();
-                    }
-
-                    return Ok(updateDto.ToStockDto());
-                }
-
-        [HttpPut]
-        [Route("{email}")]
-        public async Task<IActionResult> Update([FromRoute] string email, [FromBody] UpdateUserDto updateDto)
-        {
-            //var user = await _context.Users.FirstOrDefaultAsync(x => x.Email.Contains(email));
-            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Email ==email);
-
-            if (user != null)
-            {
-                return NotFound();
-            }
-
-            var updateUser = await _userManager.UpdateAsync(user);
-
-            if (updateUser.Succeeded)
-            {
-                return Ok(updateUser);
-            }
-            else
-            {
-                return StatusCode(500, updateUser.Errors);
-            }
-        }*/
     }
 }

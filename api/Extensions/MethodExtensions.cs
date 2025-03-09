@@ -58,6 +58,8 @@ namespace api.Extensions
 
             services.AddScoped<IUserData, UserDataRepository>();
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IProductData, ProductDataRepository>();
+            services.AddScoped<ICart, CartRepository>();
         }
     }
 }

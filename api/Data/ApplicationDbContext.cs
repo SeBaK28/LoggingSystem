@@ -17,6 +17,8 @@ namespace api.Data
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<Cart> Carts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -39,6 +41,16 @@ namespace api.Data
                 }
             };
             builder.Entity<IdentityRole>().HasData(roles);
+
+            builder.Entity<User>()
+            .HasOne(e => e.userCart)
+            .WithOne(e => e.user)
+            .HasForeignKey<Cart>(e => e.UserId)
+            .IsRequired(false);
+
+            builder.Entity<Cart>()
+            .HasMany(e => e.ProductsList)
+            .WithMany();
         }
     }
 }

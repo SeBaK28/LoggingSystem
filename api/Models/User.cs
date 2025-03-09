@@ -10,5 +10,6 @@ namespace api.Models
     public class User : IdentityUser
     {
         public string Roles { get; set; } = "User";
+        public Cart? userCart { get; set; }
     }
 }

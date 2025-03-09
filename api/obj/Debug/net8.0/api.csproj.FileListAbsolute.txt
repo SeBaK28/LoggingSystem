@@ -76,3 +76,4 @@
 /Users/sebastiankonstanty/Kursy/Logowanie/api/obj/Debug/net8.0/ref/api.dll
 /Users/sebastiankonstanty/Kursy/Logowanie/api/bin/Debug/net8.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
 /Users/sebastiankonstanty/Kursy/Logowanie/api/bin/Debug/net8.0/Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+/Users/sebastiankonstanty/Kursy/Logowanie/api/obj/Debug/net8.0/api.sourcelink.json

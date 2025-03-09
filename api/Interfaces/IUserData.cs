@@ -10,9 +10,8 @@ namespace api.Interfaces
     public interface IUserData
     {
         Task<List<User>> GetAllAsync();
-        Task<User> CreateAsync(User user);
         Task<User?> GetByUserNameAsync(string name);
-        Task<User?> UpdateAsync(string name, UpdateUserDto updateDto);
-        Task<User?> DeleteAsync(string email, string password);
+        Task<User?> DeleteAsync(string email);
+        Task<bool> isEmailExist(string email);
     }
 }
