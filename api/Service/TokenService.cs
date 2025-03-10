@@ -28,7 +28,9 @@ namespace api.Service
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Email, tokenUser.Email),
-                new Claim(JwtRegisteredClaimNames.GivenName, tokenUser.UserName)
+                new Claim(JwtRegisteredClaimNames.GivenName, tokenUser.UserName),
+                new Claim(JwtRegisteredClaimNames.Sub, tokenUser.Id),
+                new Claim("Role", tokenUser.Roles)
             };
 
             var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
@@ -39,7 +41,7 @@ namespace api.Service
                 Expires = DateTime.Now.AddDays(7),
                 SigningCredentials = creds,
                 Issuer = _config["JWT:Issuer"],
-                Audience = _config["JWT:Audiencer"]
+                Audience = _config["JWT:Audience"]
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
