@@ -6,7 +6,6 @@ using api.Data;
 using api.Dtos.Products;
 using api.Interfaces;
 using api.Mapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,7 +33,6 @@ namespace api.Controller
 
         //Role: StoreService
         [HttpPost]
-        [Authorize(Roles = "StoreService")]
         public async Task<IActionResult> AddNewProduct([FromBody] ProductDto productDto)
         {
             var newProd = productDto.NewProductDto();
@@ -45,7 +43,6 @@ namespace api.Controller
 
         [HttpPut]
         [Route("{name}/{quantityOfProduct}")]
-        [Authorize(Roles = "StoreService")]
         public async Task<IActionResult> AddQuantity([FromRoute] string name, int quantityOfProduct)
         {
             var product = await _product.FindProductAsync(name);

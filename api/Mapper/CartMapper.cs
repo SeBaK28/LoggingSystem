@@ -20,5 +20,13 @@ namespace api.Mapper
                 ProductsList = cart.ProductsList.Select(x => x.GetProductDto()).ToList()
             };
         }
+
+        public static Cart CreateNewCartDto(this CartDto cartDto)
+        {
+            return new Cart
+            {
+                UserId = cartDto.UserId
+            };
+        }
     }
 }
