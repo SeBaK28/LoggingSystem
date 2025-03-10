@@ -9,6 +9,7 @@ using api.Interfaces;
 using api.Mapper;
 using api.Models;
 using Azure.Messaging;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -54,6 +55,7 @@ namespace api.Controller
         //AsAdmin
         [HttpDelete]
         [Route("{email}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteAccount([FromRoute] string email)
         {
             var user = await _userData.DeleteAsync(email);

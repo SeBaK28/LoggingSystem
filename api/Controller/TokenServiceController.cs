@@ -11,6 +11,7 @@ using api.Interfaces;
 using api.Mapper;
 using api.Models;
 using Azure.Messaging;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -119,7 +120,6 @@ namespace api.Controller
             {
                 return StatusCode(500, e);
             };
-
         }
 
         [HttpPut]

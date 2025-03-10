@@ -6,6 +6,7 @@ using api.Data;
 using api.Dtos;
 using api.Interfaces;
 using api.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,8 +15,10 @@ namespace api.Repository
     public class CartRepository : ICart
     {
         private readonly ApplicationDbContext _context;
-        public CartRepository(ApplicationDbContext context)
+        private readonly UserManager<User> _userManager;
+        public CartRepository(ApplicationDbContext context, UserManager<User> userManager)
         {
+            _userManager = userManager;
             _context = context;
         }
 
@@ -24,9 +27,18 @@ namespace api.Repository
             return await _context.Carts.FirstOrDefaultAsync(x => x.UserId == userId);
         }
 
-        public async Task<List<Cart>> GetAllProdFromCartAsync(string email)
+        public Task<List<Cart>> GetAllProdFromCartAsync(string email)
         {
-            return await _context.Carts.ToListAsync();
+            throw new NotImplementedException();
         }
+        /*
+       public async Task<List<Cart>> GetAllProdFromCartAsync(User user)
+       {
+           var curretnUser = _userManager.GetUserId(user);
+
+
+
+           //return await _context.Carts.ToListAsync();
+       }*/
     }
 }

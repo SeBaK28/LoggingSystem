@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 namespace api.Extensions
 {
@@ -60,6 +61,8 @@ namespace api.Extensions
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IProductData, ProductDataRepository>();
             services.AddScoped<ICart, CartRepository>();
+
+
         }
     }
 }
