@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using api.Data;
 using api.Dtos.Products;
 using api.Interfaces;
 using api.Mapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controller
@@ -24,16 +27,32 @@ namespace api.Controller
             _productData = productData;
             _cart = cart;
         }
-        /*
-                [HttpGet]
-                public async Task<IActionResult> GetAllFromCart()
-                {
-                    var prod = await _cart.GetAllProdFromCartAsync();
 
-                    var prodDto = prod.Select(s => s.GetCartDto());
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetMyCart([FromBody] string email)
+        {
+            // var getName = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                    return Ok(prodDto);
-                }*/
+            // var getCart = await _cart.FindCartByUserId(getName);
 
+            // var cartProduct = await _cart.GetAllProdFromCartAsync(getCart);
+
+            // return Ok(cartProduct.ToList());
+
+            var user = _cart.GetAllProdFromCartAsync(email);
+
+            return Ok(user);
+
+
+            // var role = User.FindFirst("Role")?.Value;
+
+            // if (string.IsNullOrEmpty(getName) || string.IsNullOrEmpty(role))
+            // {
+            //     return Unauthorized("Dupa");
+            // }
+
+            // return Ok(new { UserId = getName, UserRole = role });
+        }
     }
 }

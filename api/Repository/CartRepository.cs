@@ -27,9 +27,13 @@ namespace api.Repository
             return await _context.Carts.FirstOrDefaultAsync(x => x.UserId == userId);
         }
 
-        public async Task<List<Cart>> GetAllProdFromCartAsync(string email)
+        public async Task<List<string>> GetAllProdFromCartAsync(string email)
         {
-            return await _context.Carts.ToListAsync();
+            var user = await FindCartByUserId(email);
+
+            var lista = user.ProductsList.Select(x => x.ProductName).ToList();
+
+            return lista;
         }
     }
 }
