@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using api.Data;
 using api.Dtos;
 using api.Dtos.Cart;
+using api.Dtos.CartProducts;
 using api.Dtos.TokenService;
 using api.Interfaces;
 using api.Mapper;
@@ -99,7 +100,7 @@ namespace api.Controller
                                 {
                                     CartId = appUser.userCart.CartId,
                                     UserId = appUser.Id,
-                                    ProductsList = null
+                                    ProductsList = new List<CartProductDto>()
                                 }
                             }
                         );
@@ -192,7 +193,7 @@ namespace api.Controller
                 return Unauthorized("Wrong Password");
             }
 
-            var deleteCart = await _cart.FindCartByUserId(user.Id);
+            var deleteCart = await _cart.FindCartByUserIdAsync(user.Id);
             var deleteUser = await _userManager.DeleteAsync(user);
             _context.Carts.Remove(deleteCart);
             await _context.SaveChangesAsync();

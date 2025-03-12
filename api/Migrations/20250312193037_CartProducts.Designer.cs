@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using api.Data;
 
@@ -11,9 +12,11 @@ using api.Data;
 namespace api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250312193037_CartProducts")]
+    partial class CartProducts
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,19 +54,19 @@ namespace api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "dbfc942f-b80b-426e-8b4e-5b4cc9381892",
+                            Id = "3915e851-aaf7-435c-a483-a8208d7d5201",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "c6136cc2-d948-4c28-8800-89513c3790fe",
+                            Id = "e1841e79-98a0-4a79-afc5-ac17a7c8ac96",
                             Name = "User",
                             NormalizedName = "User"
                         },
                         new
                         {
-                            Id = "a9c99b1c-9780-48cf-808f-9f351d0aed23",
+                            Id = "6bf532f2-1686-48e2-bae6-c262bfa53c88",
                             Name = "Moderator",
                             NormalizedName = "MODERATOR"
                         });
@@ -209,6 +212,9 @@ namespace api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CartProductId"));
 
+                    b.Property<int>("CartId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Pieces")
                         .HasColumnType("int");
 
@@ -218,12 +224,9 @@ namespace api.Migrations
                     b.Property<string>("ProductName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserCartId")
-                        .HasColumnType("int");
-
                     b.HasKey("CartProductId");
 
-                    b.HasIndex("UserCartId");
+                    b.HasIndex("CartId");
 
                     b.ToTable("cartProducts");
                 });
@@ -383,7 +386,7 @@ namespace api.Migrations
                 {
                     b.HasOne("api.Models.Cart", "cart")
                         .WithMany("ProductsList")
-                        .HasForeignKey("UserCartId")
+                        .HasForeignKey("CartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

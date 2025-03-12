@@ -42,7 +42,7 @@ namespace api.Repository
                 return null;
             }
 
-            var userCart = await _cart.FindCartByUserId(user.Id);
+            var userCart = await _cart.FindCartByUserIdAsync(user.Id);
 
             _context.Users.Remove(user);
             _context.Carts.Remove(userCart);

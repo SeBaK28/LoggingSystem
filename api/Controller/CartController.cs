@@ -5,11 +5,14 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using api.Data;
+using api.Dtos.CartProducts;
 using api.Dtos.Products;
 using api.Interfaces;
 using api.Mapper;
+using api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Controller
 {
@@ -29,30 +32,32 @@ namespace api.Controller
         }
 
         [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> GetMyCart([FromBody] string email)
+        //[Authorize]
+        [Route("{email}")]
+        public async Task<IActionResult> GetMyCart([FromRoute] string email)
         {
-            // var getName = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var getUserCart = await _context.Carts.Include(x => x.ProductsList).FirstOrDefaultAsync(x => x.UserId == email);
 
-            // var getCart = await _cart.FindCartByUserId(getName);
+            var getProductsFromCart = await _context.cartProducts.FirstOrDefaultAsync(x => x.UserCartId == getUserCart.CartId);
 
-            // var cartProduct = await _cart.GetAllProdFromCartAsync(getCart);
+            return Ok(getUserCart.GetCartDto());
+        }
 
-            // return Ok(cartProduct.ToList());
+        [HttpPost]
+        public async Task<IActionResult> AddProductToCart(string userId, [FromBody] CartProductDto productDto)
+        {
+            var getCart = await _cart.AddProductToCartAsync(userId, productDto);
 
-            var user = _cart.GetAllProdFromCartAsync(email);
+            var getProducts = await _context.cartProducts.FirstOrDefaultAsync(x => x.UserCartId == getCart.CartId);
 
-            return Ok(user);
+            if (getCart == null || getProducts == null)
+                return NotFound();
 
+            //getCart.TotalPrice += getProducts.PrivePerPiece;
 
-            // var role = User.FindFirst("Role")?.Value;
+            await _context.SaveChangesAsync();
 
-            // if (string.IsNullOrEmpty(getName) || string.IsNullOrEmpty(role))
-            // {
-            //     return Unauthorized("Dupa");
-            // }
-
-            // return Ok(new { UserId = getName, UserRole = role });
+            return Ok(getCart.GetCartDto());
         }
     }
 }
