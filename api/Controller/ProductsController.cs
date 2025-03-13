@@ -35,12 +35,18 @@ namespace api.Controller
         [HttpPost]
         public async Task<IActionResult> AddNewProduct([FromBody] ProductDto productDto)
         {
+            if (productDto.Price <= 0 || productDto.AvailableQuantity <= 0) //
+            {
+                return Conflict("You cannot enter value less or equal to 0");
+            }
             var newProd = productDto.NewProductDto();
             await _product.AddNewProductAsync(newProd);
 
             return CreatedAtAction(nameof(GetAllProducts), new { id = newProd.ProductId }, newProd.GetProductDto());
         }
 
+
+        //Role: StoreService
         [HttpPut]
         [Route("{name}/{quantityOfProduct}")]
         public async Task<IActionResult> AddQuantity([FromRoute] string name, int quantityOfProduct)

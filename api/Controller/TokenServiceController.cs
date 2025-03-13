@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using api.Data;
 using api.Dtos;
@@ -12,6 +13,7 @@ using api.Interfaces;
 using api.Mapper;
 using api.Models;
 using Azure.Messaging;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -102,12 +104,6 @@ namespace api.Controller
                                     UserId = appUser.Id,
                                     ProductList = new List<NewCartProductDto>()
                                 }
-                                // cart = new CartDto
-                                // {
-                                //     CartId = appUser.userCart.CartId,
-                                //     UserId = appUser.Id,
-                                //     ProductsList = new List<CartProductDto>
-                                // }
                             }
                         );
 
@@ -130,10 +126,11 @@ namespace api.Controller
         }
 
         [HttpPut]
-        [Route("{email}")]
-        public async Task<IActionResult> Update([FromRoute] string email, [FromBody] UpdateUserDto updateDto)
+        [Authorize]
+        public async Task<IActionResult> Update([FromBody] UpdateUserDto updateDto)
         {
-            var getUser = await _userManager.Users.FirstOrDefaultAsync(x => x.Email == email);
+            var getUserEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+            var getUser = await _userManager.Users.FirstOrDefaultAsync(x => x.Email == getUserEmail);
             if (getUser == null)
             {
                 return NotFound();
@@ -156,9 +153,11 @@ namespace api.Controller
         }
 
         [HttpPost("password")]
+        [Authorize]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetDto)
         {
-            var getUser = await _userManager.Users.FirstOrDefaultAsync(x => x.Email == resetDto.Email);
+            var getUserEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+            var getUser = await _userManager.Users.FirstOrDefaultAsync(x => x.Email == getUserEmail);
 
             if (getUser == null)
             {

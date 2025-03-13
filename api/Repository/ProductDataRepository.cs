@@ -40,5 +40,12 @@ namespace api.Repository
         {
             return await _context.Products.ToListAsync();
         }
+
+        public async Task SubstractProducts(AddCartProductToListDto product)
+        {
+            var getProductData = await FindProductAsync(product.ProductName);
+
+            getProductData.AvailableQuantity -= product.Pieces;
+        }
     }
 }

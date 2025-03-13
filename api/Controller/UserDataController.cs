@@ -31,7 +31,7 @@ namespace api.Controller
             _userData = userData;
         }
 
-        [HttpGet]
+        [HttpGet] //Manager
         public async Task<IActionResult> GetAll()
         {
             var stock = await _userData.GetAllAsync();
@@ -40,7 +40,7 @@ namespace api.Controller
         }
 
         [HttpGet]
-        [Route("{userName}")]
+        [Route("{userName}")] //Admin and Manager
         public async Task<IActionResult> GetByName([FromRoute] string userName)
         {
             var stock = await _userData.GetByUserNameAsync(userName);
@@ -53,7 +53,7 @@ namespace api.Controller
             return Ok(stock.ToStockDto());
         }
 
-        //AsAdmin
+        ///AsAdmin
         [HttpDelete]
         [Route("{email}")]
         public async Task<IActionResult> DeleteAccount([FromRoute] string email)
@@ -67,5 +67,8 @@ namespace api.Controller
 
             return NoContent();
         }
+
+        //As Admin 
+        //Change User Role
     }
 }

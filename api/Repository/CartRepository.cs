@@ -30,9 +30,10 @@ namespace api.Repository
 
         public async Task<Cart> AddProductToCartAsync(string userId, AddCartProductToListDto productDto)
         {
+
             var getCartData = await FindCartByUserIdAsync(userId);
 
-            var availableProducts = await _context.Products.FirstOrDefaultAsync(x => x.ProductName == productDto.ProductName);
+            var availableProducts = await _context.Products.FirstOrDefaultAsync(x => x.ProductName.Contains(productDto.ProductName));
 
             if (availableProducts == null)
                 return null;
@@ -42,7 +43,17 @@ namespace api.Repository
                 productDto.Pieces = availableProducts.AvailableQuantity;
             }
 
-            getCartData.ProductsList.Add(productDto.AddProductToCartDto());
+            var isAlreadyInCart = await _context.cartProducts.FirstOrDefaultAsync(x => x.ProductName.Contains(productDto.ProductName));
+
+            if (isAlreadyInCart != null)
+            {
+                isAlreadyInCart.Pieces += productDto.Pieces;
+            }
+            else
+            {
+                getCartData.ProductsList.Add(productDto.AddProductToCartDto());
+            }
+
 
             await _context.SaveChangesAsync();
             return getCartData;

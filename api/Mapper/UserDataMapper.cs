@@ -21,7 +21,6 @@ namespace api.Mapper
                 UserName = user.UserName,
                 Roles = user.Roles,
                 PhoneNumber = user.PhoneNumber,
-                PasswordHash = user.PasswordHash
             };
         }
 

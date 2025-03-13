@@ -31,12 +31,13 @@ namespace api.Controller
             _cart = cart;
         }
 
+
         [HttpGet]
-        //[Authorize]
-        [Route("{email}")]
-        public async Task<IActionResult> GetMyCart([FromRoute] string email)
+        [Authorize]
+        public async Task<IActionResult> GetMyCart()
         {
-            var getUserCart = await _context.Carts.Include(x => x.ProductsList).FirstOrDefaultAsync(x => x.UserId == email);
+            var getUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var getUserCart = await _context.Carts.Include(x => x.ProductsList).FirstOrDefaultAsync(x => x.UserId == getUserId);
 
             var getProductsFromCart = await _context.cartProducts.FirstOrDefaultAsync(x => x.UserCartId == getUserCart.CartId);
 
@@ -44,20 +45,39 @@ namespace api.Controller
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddProductToCart(string userId, [FromBody] AddCartProductToListDto productDto)
+        [Authorize]
+        public async Task<IActionResult> AddProductToCart([FromBody] AddCartProductToListDto productDto)
         {
-            var getCart = await _cart.AddProductToCartAsync(userId, productDto);
+            var getUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             var getProductData = await _context.Products.FirstOrDefaultAsync(x => x.ProductName == productDto.ProductName);
+            if (getProductData.AvailableQuantity <= 0)
+            {
+                return Conflict($"No product avaliable: {productDto.ProductName}");
+            }
+
+            var getCart = await _cart.AddProductToCartAsync(getUserId, productDto);
 
             if (getCart == null || getProductData == null)
                 return NotFound();
 
-            getCart.TotalPrice += getProductData.Price;
+
+            getCart.TotalPrice += getProductData.Price * productDto.Pieces;
+
+            // if (getProductData.AvailableQuantity < productDto.Pieces)
+            // {                                                            //jak zrobić zeby przy wykonaniu If zwracał tez wiadomosc
+            //     await _productData.SubstractProducts(productDto);
+            //     await _context.SaveChangesAsync();
+            //     return Created($"We've got only {getProductData.AvailableQuantity} pieces", getCart.GetCartDto());
+            // }
+            await _productData.SubstractProducts(productDto);
 
             await _context.SaveChangesAsync();
 
             return Ok(getCart.GetCartDto());
         }
+
+        //Delete Product from cart
+        //Change value of Pieces
     }
 }
