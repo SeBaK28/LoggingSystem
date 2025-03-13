@@ -28,16 +28,9 @@ namespace api.Repository
             _product = product;
         }
 
-        public async Task<Cart> AddProductToCartAsync(string userId, CartProductDto productDto)
+        public async Task<Cart> AddProductToCartAsync(string userId, AddCartProductToListDto productDto)
         {
-            var userCart = FindCartById(userId);
-            if (userCart == null)
-                return null;
-
-            var getProd = await _context.cartProducts.FirstOrDefaultAsync(x => x.UserCartId == userCart.CartId);
-
-            if (getProd == null)
-                return null;
+            var getCartData = await FindCartByUserIdAsync(userId);
 
             var availableProducts = await _context.Products.FirstOrDefaultAsync(x => x.ProductName == productDto.ProductName);
 
@@ -49,16 +42,11 @@ namespace api.Repository
                 productDto.Pieces = availableProducts.AvailableQuantity;
             }
 
-            await _context.cartProducts.AddAsync(new CartProduct() { ProductName = productDto.ProductName, Pieces = productDto.Pieces });
+            getCartData.ProductsList.Add(productDto.AddProductToCartDto());
 
             await _context.SaveChangesAsync();
-            return userCart;
+            return getCartData;
 
-        }
-
-        public Cart FindCartById(string userId)
-        {
-            return _context.Carts.FirstOrDefault(x => x.UserId == userId);
         }
 
         public async Task<Cart> FindCartByUserIdAsync(string userId)

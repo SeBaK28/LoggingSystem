@@ -14,6 +14,6 @@ namespace api.Models
         public List<CartProduct>? ProductsList { get; set; } = new List<CartProduct>();
         public float TotalPrice { get; set; }
         public User user { get; set; }
-        public DateTime CartCreatedAt { get; set; } = DateTime.Now;
+        public DateTime CartCreatedAt { get; set; }
     }
 }

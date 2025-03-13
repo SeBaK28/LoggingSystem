@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace api.Dtos.CartProducts
 {
-    public class CartProductDto
+    public class NewCartProductDto
     {
-        public string? ProductName { get; set; }
-        public int Pieces { get; set; }
-        public float PricePerPiece { get; set; }
+        public int CartId { get; set; }
     }
 }

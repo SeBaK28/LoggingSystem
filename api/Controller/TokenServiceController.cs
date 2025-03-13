@@ -96,12 +96,18 @@ namespace api.Controller
                                 PhoneNumber = appUser.PhoneNumber,
                                 Roles = appUser.Roles,
                                 Tokens = _tokenService.CreateToken(appUser),
-                                cart = new CartDto
+                                cart = new CreateCartDto
                                 {
                                     CartId = appUser.userCart.CartId,
                                     UserId = appUser.Id,
-                                    ProductsList = new List<CartProductDto>()
+                                    ProductList = new List<NewCartProductDto>()
                                 }
+                                // cart = new CartDto
+                                // {
+                                //     CartId = appUser.userCart.CartId,
+                                //     UserId = appUser.Id,
+                                //     ProductsList = new List<CartProductDto>
+                                // }
                             }
                         );
 

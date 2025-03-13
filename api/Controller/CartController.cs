@@ -44,16 +44,16 @@ namespace api.Controller
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddProductToCart(string userId, [FromBody] CartProductDto productDto)
+        public async Task<IActionResult> AddProductToCart(string userId, [FromBody] AddCartProductToListDto productDto)
         {
             var getCart = await _cart.AddProductToCartAsync(userId, productDto);
 
-            var getProducts = await _context.cartProducts.FirstOrDefaultAsync(x => x.UserCartId == getCart.CartId);
+            var getProductData = await _context.Products.FirstOrDefaultAsync(x => x.ProductName == productDto.ProductName);
 
-            if (getCart == null || getProducts == null)
+            if (getCart == null || getProductData == null)
                 return NotFound();
 
-            //getCart.TotalPrice += getProducts.PrivePerPiece;
+            getCart.TotalPrice += getProductData.Price;
 
             await _context.SaveChangesAsync();
 

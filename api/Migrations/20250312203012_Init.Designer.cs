@@ -12,8 +12,8 @@ using api.Data;
 namespace api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250308150656_AddDateTimeToCart")]
-    partial class AddDateTimeToCart
+    [Migration("20250312203012_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,21 +24,6 @@ namespace api.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("CartProduct", b =>
-                {
-                    b.Property<int>("CartId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductsListProductId")
-                        .HasColumnType("int");
-
-                    b.HasKey("CartId", "ProductsListProductId");
-
-                    b.HasIndex("ProductsListProductId");
-
-                    b.ToTable("CartProduct");
-                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -69,19 +54,19 @@ namespace api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "5ed875c5-30f1-45f0-9008-16e9690bc466",
+                            Id = "1db414c2-41fc-457c-be85-038aacdc6c98",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "42e0ff1b-37bd-4911-8b0b-dd1572246500",
+                            Id = "6bc33db4-af66-44f7-9d8d-4067b163e881",
                             Name = "User",
                             NormalizedName = "User"
                         },
                         new
                         {
-                            Id = "06035dcb-9dd0-4b82-8c52-990e76adae30",
+                            Id = "e42a9829-4856-4f9d-a26c-dcff8dadb54b",
                             Name = "Moderator",
                             NormalizedName = "MODERATOR"
                         });
@@ -219,6 +204,33 @@ namespace api.Migrations
                     b.ToTable("Carts");
                 });
 
+            modelBuilder.Entity("api.Models.CartProduct", b =>
+                {
+                    b.Property<int>("CartProductId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CartProductId"));
+
+                    b.Property<int>("Pieces")
+                        .HasColumnType("int");
+
+                    b.Property<float>("PrivePerPiece")
+                        .HasColumnType("real");
+
+                    b.Property<string>("ProductName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserCartId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CartProductId");
+
+                    b.HasIndex("UserCartId");
+
+                    b.ToTable("cartProducts");
+                });
+
             modelBuilder.Entity("api.Models.Product", b =>
                 {
                     b.Property<int>("ProductId")
@@ -310,21 +322,6 @@ namespace api.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("CartProduct", b =>
-                {
-                    b.HasOne("api.Models.Cart", null)
-                        .WithMany()
-                        .HasForeignKey("CartId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("api.Models.Product", null)
-                        .WithMany()
-                        .HasForeignKey("ProductsListProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -383,6 +380,22 @@ namespace api.Migrations
                         .HasForeignKey("api.Models.Cart", "UserId");
 
                     b.Navigation("user");
+                });
+
+            modelBuilder.Entity("api.Models.CartProduct", b =>
+                {
+                    b.HasOne("api.Models.Cart", "cart")
+                        .WithMany("ProductsList")
+                        .HasForeignKey("UserCartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("cart");
+                });
+
+            modelBuilder.Entity("api.Models.Cart", b =>
+                {
+                    b.Navigation("ProductsList");
                 });
 
             modelBuilder.Entity("api.Models.User", b =>

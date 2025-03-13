@@ -22,21 +22,42 @@ namespace api.Mapper
             };
         }
 
+        public static Cart CreateMapToCartDto(this CreateCartDto createDto)
+        {
+            return new Cart
+            {
+                CartId = createDto.CartId,
+                UserId = createDto.UserId,
+                CartCreatedAt = createDto.CreatedAt,
+                ProductsList = createDto.ProductList.Select(x => x.NewCartProductDto()).ToList()
+            };
+        }
+
         public static CartProductDto GetProductFromCartDto(this CartProduct cartProduct)
         {
             return new CartProductDto
             {
                 ProductName = cartProduct.ProductName,
                 Pieces = cartProduct.Pieces,
+                PricePerPiece = cartProduct.PrivePerPiece
             };
         }
 
-        public static CartProduct AddProductToCartDto(this CartProductDto productDto)
+        public static CartProduct NewCartProductDto(this NewCartProductDto productDto)
         {
             return new CartProduct
             {
-                ProductName = productDto.ProductName,
-                Pieces = productDto.Pieces,
+                UserCartId = productDto.CartId,
+
+            };
+        }
+
+        public static CartProduct AddProductToCartDto(this AddCartProductToListDto addProdDto)
+        {
+            return new CartProduct
+            {
+                ProductName = addProdDto.ProductName,
+                Pieces = addProdDto.Pieces
             };
         }
     }

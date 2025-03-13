@@ -10,8 +10,7 @@ namespace api.Interfaces
 {
     public interface ICart
     {
-        Task<Cart> AddProductToCartAsync(string Email, CartProductDto cartProductDto);
+        Task<Cart> AddProductToCartAsync(string Email, AddCartProductToListDto cartProductDto);
         Task<Cart> FindCartByUserIdAsync(string userId);
-        Cart FindCartById(string userId);
     }
 }
