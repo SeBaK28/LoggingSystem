@@ -19,7 +19,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace api.Controller
 {
-    [Route("api/controller")]
+    [Route("api/User")]
     [ApiController]
     public class UserDataController : ControllerBase
     {

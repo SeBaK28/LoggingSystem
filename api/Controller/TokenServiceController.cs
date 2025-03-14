@@ -20,7 +20,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace api.Controller
 {
-    [Route("api/account")]
+    [Route("api/Account")]
     [ApiController]
     public class TokenServiceController : ControllerBase
     {

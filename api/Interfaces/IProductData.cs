@@ -12,7 +12,8 @@ namespace api.Interfaces
     {
         Task<List<Product>> GetAllProdAsync();
         Task<Product> AddNewProductAsync(Product product);
-        Task<Product?> FindProductAsync(string name);
+        Task<Product?> FindProductByNameAsync(string name);
         Task SubstractProducts(AddCartProductToListDto product);
+        Task<Product?> DeleteProduct(string ProductName);
     }
 }

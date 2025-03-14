@@ -26,15 +26,17 @@ namespace api.Repository
             return product;
         }
 
-        public async Task<Product?> FindProductAsync(string name)
+        public async Task<Product?> DeleteProduct(string ProductName)
         {
-            var find = await _context.Products.FirstOrDefaultAsync(x => x.ProductName.Contains(name));
-
-            if (find == null)
-                return null;
-
-            return find;
+            var prod = await FindProductByNameAsync(ProductName);
+            _context.Products.Remove(prod);
+            await _context.SaveChangesAsync();
+            return prod;
         }
+
+
+        public async Task<Product> FindProductByNameAsync(string name) =>
+            await _context.Products.FirstOrDefaultAsync(x => x.ProductName.Contains(name));
 
         public async Task<List<Product>> GetAllProdAsync()
         {
@@ -43,7 +45,7 @@ namespace api.Repository
 
         public async Task SubstractProducts(AddCartProductToListDto product)
         {
-            var getProductData = await FindProductAsync(product.ProductName);
+            var getProductData = await FindProductByNameAsync(product.ProductName);
 
             getProductData.AvailableQuantity -= product.Pieces;
         }

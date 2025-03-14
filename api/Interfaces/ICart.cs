@@ -12,5 +12,6 @@ namespace api.Interfaces
     {
         Task<Cart> AddProductToCartAsync(string Email, AddCartProductToListDto cartProductDto);
         Task<Cart> FindCartByUserIdAsync(string userId);
+        Task<Cart> ChangeValueOfPiecesInCartAsync(string UserID, string ProductName, int Pieces);
     }
 }

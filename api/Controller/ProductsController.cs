@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controller
 {
-    [Route("api/product")]
+    [Route("api/StoreService/product")]
     [ApiController]
     public class ProductsController : ControllerBase
     {
@@ -51,7 +51,7 @@ namespace api.Controller
         [Route("{name}/{quantityOfProduct}")]
         public async Task<IActionResult> AddQuantity([FromRoute] string name, int quantityOfProduct)
         {
-            var product = await _product.FindProductAsync(name);
+            var product = await _product.FindProductByNameAsync(name);
 
             if (product == null)
             {
@@ -70,7 +70,18 @@ namespace api.Controller
             return Ok(product.GetProductDto());
         }
 
-        //Remove Product
+        [HttpDelete]
+        [Route("{ProductName}")]
+        public async Task<IActionResult> DeleteProduct([FromRoute] string ProductName)
+        {
+            var product = await _product.DeleteProduct(ProductName);
 
+            if (product == null)
+            {
+                return BadRequest();
+            }
+
+            return NoContent();
+        }
     }
 }

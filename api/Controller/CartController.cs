@@ -50,7 +50,7 @@ namespace api.Controller
         {
             var getUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            var getProductData = await _context.Products.FirstOrDefaultAsync(x => x.ProductName == productDto.ProductName);
+            var getProductData = await _productData.FindProductByNameAsync(productDto.ProductName);
             if (getProductData.AvailableQuantity <= 0)
             {
                 return Conflict($"No product avaliable: {productDto.ProductName}");
@@ -61,8 +61,8 @@ namespace api.Controller
             if (getCart == null || getProductData == null)
                 return NotFound();
 
-
             getCart.TotalPrice += getProductData.Price * productDto.Pieces;
+
 
             // if (getProductData.AvailableQuantity < productDto.Pieces)
             // {                                                            //jak zrobić zeby przy wykonaniu If zwracał tez wiadomosc
@@ -77,7 +77,14 @@ namespace api.Controller
             return Ok(getCart.GetCartDto());
         }
 
-        //Delete Product from cart
-        //Change value of Pieces
+        [HttpDelete]
+        [Authorize]
+        public async Task<IActionResult> ChangeValueOfPiecesInCart(string ProductName, int Pieces)
+        {
+            var getUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var getCart = await _cart.ChangeValueOfPiecesInCartAsync(getUserId, ProductName, Pieces);
+
+            return Ok("Succes");
+        }
     }
 }
